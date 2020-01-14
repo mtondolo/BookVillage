@@ -4,10 +4,11 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -127,7 +128,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 BookEntry.COLUMN_BOOK_PRICE};
 
         // This loader will execute the ContentProvider's query method on a background thread
-        return new android.support.v4.content.CursorLoader ( this,
+        return new CursorLoader( this,
                 BookEntry.CONTENT_URI,   // The table to query
                 projection,            // The columns to return
                 null,         // The columns for the WHERE clause
