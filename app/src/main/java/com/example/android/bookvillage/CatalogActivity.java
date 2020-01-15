@@ -61,7 +61,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         RecyclerView recyclerBooks = findViewById(R.id.list_books);
         LinearLayoutManager booksLinearLayoutManager = new LinearLayoutManager(this);
         recyclerBooks.setLayoutManager(booksLinearLayoutManager);
-        
+
        /* // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
         bookListView.setEmptyView(emptyView);*/

@@ -34,7 +34,7 @@ public class BookCursorAdapter extends CursorAdapter {
      * @param c       The cursor from which to get the data.
      */
     public BookCursorAdapter(Context context, Cursor c) {
-        super ( context, c, 0 /* flags */ );
+        super(context, c, 0 /* flags */);
     }
 
     /**
@@ -48,7 +48,7 @@ public class BookCursorAdapter extends CursorAdapter {
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from ( context ).inflate ( R.layout.list_item, parent, false );
+        return LayoutInflater.from(context).inflate(R.layout.item_book_list, parent, false);
     }
 
     /**
@@ -65,44 +65,44 @@ public class BookCursorAdapter extends CursorAdapter {
     public void bindView(View view, final Context context, Cursor cursor) {
 
         // Find individual views that we want to modify in the list item layout
-        TextView nameTextView = (TextView) view.findViewById ( R.id.name );
-        TextView quantityTextView = (TextView) view.findViewById ( R.id.quantity );
-        TextView priceTextView = (TextView) view.findViewById ( R.id.price );
+        TextView nameTextView = (TextView) view.findViewById(R.id.name);
+        TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
+        TextView priceTextView = (TextView) view.findViewById(R.id.price);
 
         // Find the columns of book attributes that we're interested in
-        int nameColumnIndex = cursor.getColumnIndex ( BookEntry.COLUMN_BOOK_NAME );
-        int quantityColumnIndex = cursor.getColumnIndex ( COLUMN_BOOK_QUANTITY );
-        int priceColumnIndex = cursor.getColumnIndex ( BookEntry.COLUMN_BOOK_PRICE );
+        int nameColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_NAME);
+        int quantityColumnIndex = cursor.getColumnIndex(COLUMN_BOOK_QUANTITY);
+        int priceColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_PRICE);
 
         // Read the book attributes from the Cursor for the current book
-        String bookName = cursor.getString ( nameColumnIndex );
-        final int bookQuantity = cursor.getInt ( quantityColumnIndex );
-        double bookPrice = cursor.getDouble ( priceColumnIndex );
-        final int productId = cursor.getInt ( cursor.getColumnIndex ( BookEntry._ID ) );
+        String bookName = cursor.getString(nameColumnIndex);
+        final int bookQuantity = cursor.getInt(quantityColumnIndex);
+        double bookPrice = cursor.getDouble(priceColumnIndex);
+        final int productId = cursor.getInt(cursor.getColumnIndex(BookEntry._ID));
 
         // Update the TextViews with the attributes for the current book
-        nameTextView.setText ( bookName );
-        quantityTextView.setText ( String.valueOf ( bookQuantity ) );
-        String formattedPrice = NumberFormat.getCurrencyInstance ().format ( bookPrice );
-        priceTextView.setText ( String.valueOf ( formattedPrice ) );
+        nameTextView.setText(bookName);
+        quantityTextView.setText(String.valueOf(bookQuantity));
+        String formattedPrice = NumberFormat.getCurrencyInstance().format(bookPrice);
+        priceTextView.setText(String.valueOf(formattedPrice));
 
-        TextView saleTextView = (TextView) view.findViewById ( R.id.sell );
-        saleTextView.setOnClickListener ( new View.OnClickListener () {
+        TextView saleTextView = (TextView) view.findViewById(R.id.sell);
+        saleTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (bookQuantity > 0) {
                     int newQuantity = bookQuantity - 1;
-                    Uri productUri = ContentUris.withAppendedId ( BookEntry.CONTENT_URI, productId );
+                    Uri productUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, productId);
 
-                    ContentValues values = new ContentValues ();
-                    values.put ( COLUMN_BOOK_QUANTITY, newQuantity );
-                    context.getContentResolver ().update ( productUri, values, null, null );
-                    Toast.makeText ( context, context.getString ( R.string.sell_success ), Toast.LENGTH_SHORT ).show ();
+                    ContentValues values = new ContentValues();
+                    values.put(COLUMN_BOOK_QUANTITY, newQuantity);
+                    context.getContentResolver().update(productUri, values, null, null);
+                    Toast.makeText(context, context.getString(R.string.sell_success), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText ( context, context.getString ( R.string.no_stock ), Toast.LENGTH_SHORT ).show ();
+                    Toast.makeText(context, context.getString(R.string.no_stock), Toast.LENGTH_SHORT).show();
                 }
             }
-        } );
+        });
     }
 
 }
