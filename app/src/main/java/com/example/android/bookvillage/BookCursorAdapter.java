@@ -65,9 +65,9 @@ public class BookCursorAdapter extends CursorAdapter {
     public void bindView(View view, final Context context, Cursor cursor) {
 
         // Find individual views that we want to modify in the list item layout
-        TextView nameTextView = (TextView) view.findViewById(R.id.name);
-        TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
-        TextView priceTextView = (TextView) view.findViewById(R.id.price);
+        TextView nameTextView = (TextView) view.findViewById(R.id.text_name);
+        TextView quantityTextView = (TextView) view.findViewById(R.id.text_quantity);
+        TextView priceTextView = (TextView) view.findViewById(R.id.text_price);
 
         // Find the columns of book attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_NAME);
@@ -86,7 +86,7 @@ public class BookCursorAdapter extends CursorAdapter {
         String formattedPrice = NumberFormat.getCurrencyInstance().format(bookPrice);
         priceTextView.setText(String.valueOf(formattedPrice));
 
-        TextView saleTextView = (TextView) view.findViewById(R.id.sell);
+        TextView saleTextView = (TextView) view.findViewById(R.id.text_sell);
         saleTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
