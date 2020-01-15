@@ -16,10 +16,7 @@
     android:layout_height="match_parent"
     tools:context=".CatalogActivity">
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <include layout="@layout/content_catalogue" />
 
     <!-- Empty view for the list -->
     <RelativeLayout
@@ -63,8 +60,8 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
         app:backgroundTint="#673ab7" />
