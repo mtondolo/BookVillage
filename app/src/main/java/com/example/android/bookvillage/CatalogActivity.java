@@ -1,9 +1,7 @@
 package com.example.android.bookvillage;
 
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -19,25 +17,32 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.example.android.bookvillage.data.BookContract.BookEntry;
 
 /**
  * Displays list of books that were entered and stored in the app.
  */
-public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class CatalogActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
-    /**
-     * Identifier for the book data loader
-     */
+    public static final String[] MAIN_CATALOG_PROJECTION = {
+            BookEntry.COLUMN_BOOK_QUANTITY,
+            BookEntry.COLUMN_BOOK_NAME,
+            BookEntry.COLUMN_BOOK_PRICE,
+    };
+
+    public static final int INDEX_QUANTITY = 0;
+    public static final int INDEX_NAME = 1;
+    public static final int INDEX_PRICE = 2;
+
     private static final int BOOK_LOADER = 0;
 
-    /**
-     * Adapter for the ListView
-     */
-    BookCursorAdapter mCursorAdapter;
+    Cursor mCursor;
+    private BookReyclerAdapter mBookReyclerAdapter;
+    private RecyclerView mRecyclerBooks;
+    private View mEmptyView;
+    private int mPosition = RecyclerView.NO_POSITION;
 
 
     @Override
@@ -46,7 +51,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         setContentView(R.layout.activity_catalog);
 
         // Setup FAB to open EditorActivity
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,46 +60,21 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-        // Find the ListView which will be populated with the book data
-        /*ListView bookListView = (ListView) findViewById(R.id.list_books);*/
+        mRecyclerBooks = findViewById(R.id.list_books);
+        mEmptyView = findViewById(R.id.empty_view);
 
-        RecyclerView recyclerBooks = findViewById(R.id.list_books);
         LinearLayoutManager booksLinearLayoutManager = new LinearLayoutManager(this);
-        recyclerBooks.setLayoutManager(booksLinearLayoutManager);
+        mRecyclerBooks.setLayoutManager(booksLinearLayoutManager);
 
-       /* // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
-        View emptyView = findViewById(R.id.empty_view);
-        bookListView.setEmptyView(emptyView);*/
+        mBookReyclerAdapter = new BookReyclerAdapter(this, mCursor);
+        mRecyclerBooks.setAdapter(mBookReyclerAdapter);
 
-        // Setup an Adapter to create a list item for each row of book data in the Cursor.
-        // There is no book data yet (until the loader finishes) so pass in null for the Cursor.
-      /*  mCursorAdapter = new BookCursorAdapter(this, null);
-        bookListView.setAdapter(mCursorAdapter);
+        LoaderManager.getInstance(this).initLoader(BOOK_LOADER, null, this);
+    }
 
-        // Setup the item click listener
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Create new intent to go to {@link EditorActivity}
-                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
-
-                // Form the content URI that represents the specific book that was clicked on,
-                // by appending the "id" (passed as input to this method) onto the
-                // {@link BookEntry#CONTENT_URI}.
-                // For example, the URI would be "content://com.example.android.bookvillage/books/2"
-                // if the book with ID 2 was clicked on.
-                Uri currentBookUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, id);
-
-                // Set the URI on the data field of the intent
-                intent.setData(currentBookUri);
-
-                // Launch the {@link EditorActivity} to display the data for the current book.
-                startActivity(intent);
-            }
-        });*/
-
-        // Kick off the loader
-        getSupportLoaderManager().initLoader(BOOK_LOADER, null, this);
+    private void showRecyclerBooks() {
+        mEmptyView.setVisibility(View.INVISIBLE);
+        mRecyclerBooks.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -107,7 +87,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         // Inflate the menu options from the res/menu/menu_catalog.xml file.
         // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_catalog, menu);
@@ -128,18 +107,10 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        // Define a projection that specifies the columns from the table we care about.
-        String[] projection = {
-                BookEntry._ID,
-                BookEntry.COLUMN_BOOK_NAME,
-                BookEntry.COLUMN_BOOK_QUANTITY,
-                BookEntry.COLUMN_BOOK_PRICE};
-
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,
                 BookEntry.CONTENT_URI,   // The table to query
-                projection,            // The columns to return
+                MAIN_CATALOG_PROJECTION,            // The columns to return
                 null,         // The columns for the WHERE clause
                 null,      // The values for the WHERE clause
                 null);
@@ -147,15 +118,16 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
         // Update {@link BookCursorAdapter} with this new cursor containing updated book data
-        mCursorAdapter.swapCursor(data);
+        mBookReyclerAdapter.swapCursor(data);
+        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+        mRecyclerBooks.smoothScrollToPosition(mPosition);
+        if (data.getCount() != 0) showRecyclerBooks();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
         // Callback called when the data needs to be deleted
-        mCursorAdapter.swapCursor(null);
+        mBookReyclerAdapter.swapCursor(null);
     }
 }
