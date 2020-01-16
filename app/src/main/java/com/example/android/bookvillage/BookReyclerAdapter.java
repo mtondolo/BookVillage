@@ -14,10 +14,16 @@ public class BookReyclerAdapter extends RecyclerView.Adapter<BookReyclerAdapter.
     private final Context mContext;
     private final LayoutInflater mLayoutInflater;
     private Cursor mCursor;
+    private final BookReyclerAdapterOnClickHandler mClickHandler;
 
-    public BookReyclerAdapter(Context context, Cursor cursor) {
+    public interface BookReyclerAdapterOnClickHandler {
+        void onClick(int _id);
+    }
+
+    public BookReyclerAdapter(Context context, Cursor cursor, BookReyclerAdapterOnClickHandler clickHandler) {
         mContext = context;
         mCursor = cursor;
+        mClickHandler = clickHandler;
         mLayoutInflater = LayoutInflater.from(mContext);
     }
 
@@ -52,7 +58,7 @@ public class BookReyclerAdapter extends RecyclerView.Adapter<BookReyclerAdapter.
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final TextView mTextQuantity;
         private final TextView mTextName;
@@ -63,6 +69,15 @@ public class BookReyclerAdapter extends RecyclerView.Adapter<BookReyclerAdapter.
             mTextQuantity = itemView.findViewById(R.id.text_quantity);
             mTextName = itemView.findViewById(R.id.text_name);
             mTextPrice = itemView.findViewById(R.id.text_price);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int bookId = mCursor.getInt(CatalogActivity.INDEX_ID);
+            mClickHandler.onClick(bookId);
         }
     }
 }

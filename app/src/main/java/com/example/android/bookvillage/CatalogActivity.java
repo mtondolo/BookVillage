@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,17 +25,20 @@ import com.example.android.bookvillage.data.BookContract.BookEntry;
  * Displays list of books that were entered and stored in the app.
  */
 public class CatalogActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        BookReyclerAdapter.BookReyclerAdapterOnClickHandler {
 
     public static final String[] MAIN_CATALOG_PROJECTION = {
+            BookEntry._ID,
             BookEntry.COLUMN_BOOK_QUANTITY,
             BookEntry.COLUMN_BOOK_NAME,
             BookEntry.COLUMN_BOOK_PRICE,
     };
 
-    public static final int INDEX_QUANTITY = 0;
-    public static final int INDEX_NAME = 1;
-    public static final int INDEX_PRICE = 2;
+    public static final int INDEX_ID = 0;
+    public static final int INDEX_QUANTITY = 1;
+    public static final int INDEX_NAME = 2;
+    public static final int INDEX_PRICE = 3;
 
     private static final int BOOK_LOADER = 0;
 
@@ -66,7 +70,7 @@ public class CatalogActivity extends AppCompatActivity implements
         LinearLayoutManager booksLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerBooks.setLayoutManager(booksLinearLayoutManager);
 
-        mBookReyclerAdapter = new BookReyclerAdapter(this, mCursor);
+        mBookReyclerAdapter = new BookReyclerAdapter(this, mCursor, this);
         mRecyclerBooks.setAdapter(mBookReyclerAdapter);
 
         LoaderManager.getInstance(this).initLoader(BOOK_LOADER, null, this);
@@ -129,5 +133,13 @@ public class CatalogActivity extends AppCompatActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
         mBookReyclerAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onClick(int _id) {
+        Intent editorActivityIntent = new Intent(CatalogActivity.this, EditorActivity.class);
+        Uri uriForBookClicked = BookEntry.buildBookUriWithId(_id);
+        editorActivityIntent.setData(uriForBookClicked);
+        startActivity(editorActivityIntent);
     }
 }
