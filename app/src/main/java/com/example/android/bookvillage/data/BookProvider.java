@@ -9,25 +9,32 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-import com.example.android.bookvillage.data.BookContract.BookEntry;
+/*import com.example.android.bookvillage.data.BookContract.BookEntry;*/
 
+/*
 public class BookProvider extends ContentProvider {
 
-    /**
+    */
+/**
      * URI matcher code for the content URI for the books table
-     */
+     *//*
+
     private static final int BOOKS = 100;
 
-    /**
+    */
+/**
      * URI matcher code for the content URI for a single book in the books table
-     */
+     *//*
+
     private static final int BOOKS_ID = 101;
 
-    /**
+    */
+/**
      * UriMatcher object to match a content URI to a corresponding code.
      * The input passed into the constructor represents the code to return for the root URI.
      * It's common to use NO_MATCH as the input for this case.
-     */
+     *//*
+
     private static final UriMatcher sUriMatcher = new UriMatcher ( UriMatcher.NO_MATCH );
 
     // Static initializer. This is run the first time anything is called from this class.
@@ -51,15 +58,19 @@ public class BookProvider extends ContentProvider {
         sUriMatcher.addURI ( BookContract.CONTENT_AUTHORITY, BookContract.PATH_BOOKS + "/#", BOOKS_ID );
     }
 
-    /**
+    */
+/**
      * Tag for the log messages
-     */
+     *//*
+
     public static final String LOG_TAG = BookProvider.class.getSimpleName ();
 
 
-    /**
+    */
+/**
      * Database helper object
-     */
+     *//*
+
     private BookDbHelper mDbHelper;
 
     @Override
@@ -70,9 +81,11 @@ public class BookProvider extends ContentProvider {
         return false;
     }
 
-    /**
+    */
+/**
      * Perform the query for the given URI. Use the given projection, selection, selection arguments, and sort order.
-     */
+     *//*
+
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
@@ -137,9 +150,11 @@ public class BookProvider extends ContentProvider {
         }
     }
 
-    /**
+    */
+/**
      * Insert new data into the provider with the given ContentValues.
-     */
+     *//*
+
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match ( uri );
@@ -205,10 +220,12 @@ public class BookProvider extends ContentProvider {
         }
     }
 
-    /**
+    */
+/**
      * Insert a book into the database with the given content values. Return the new content URI
      * for that specific row in the database.
-     */
+     *//*
+
     private Uri insertData(Uri uri, ContentValues values) {
 
         // Get write-able database
@@ -230,11 +247,13 @@ public class BookProvider extends ContentProvider {
         return ContentUris.withAppendedId ( uri, id );
     }
 
-    /**
+    */
+/**
      * Update books in the database with the given content values. Apply the changes to the rows
      * specified in the selection and selection arguments (which could be 0 or 1 or more books).
      * Return the number of rows that were successfully updated.
-     */
+     *//*
+
     private int updateData(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         // If the {@link BookEntry#COLUMN_BOOK_NAME} key is present,
         // check that the name value is not null.
@@ -256,3 +275,4 @@ public class BookProvider extends ContentProvider {
         return rowsUpdated;
     }
 }
+*/

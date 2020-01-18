@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/*
 public class BookReyclerAdapter extends RecyclerView.Adapter<BookReyclerAdapter.ViewHolder> {
     private final Context mContext;
     private final LayoutInflater mLayoutInflater;
@@ -81,3 +82,4 @@ public class BookReyclerAdapter extends RecyclerView.Adapter<BookReyclerAdapter.
         }
     }
 }
+*/
