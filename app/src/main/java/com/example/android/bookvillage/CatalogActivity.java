@@ -3,6 +3,7 @@ package com.example.android.bookvillage;
 import android.content.Intent;
 
 import com.example.android.bookvillage.data.AppDatabase;
+import com.example.android.bookvillage.data.BookEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import java.util.List;
 
 /*import com.example.android.bookvillage.data.BookContract.BookEntry;*/
 
@@ -87,9 +90,18 @@ public class CatalogActivity extends AppCompatActivity implements BookReyclerAda
     @Override
     protected void onResume() {
         super.onResume();
-        //  Call the adapter's setBooKs method using the result
-        // of the loadAllTasks method from the taskDao
-        mBookReyclerAdapter.setBooks(mDb.bookDao().loadAllBooks());
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<BookEntry> books = mDb.bookDao().loadAllBooks();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBookReyclerAdapter.setBooks(books);
+                    }
+                });
+            }
+        });
     }
 /* private void showRecyclerBooks() {
         mEmptyView.setVisibility(View.INVISIBLE);

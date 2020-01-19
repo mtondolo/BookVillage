@@ -265,10 +265,17 @@ public class EditorActivity extends AppCompatActivity
         double priceString = Double.parseDouble(mPriceEditText.getText().toString().trim());
         int phoneString = Integer.parseInt(mPhoneEditText.getText().toString().trim());
 
-        BookEntry bookEntry = new BookEntry(nameString, quantityString, priceString, phoneString);
-        mDb.bookDao().insertBook(bookEntry);
-        finish();
-
+        // Make taskEntry final so it is visible inside the run method
+        final BookEntry bookEntry = new BookEntry(nameString, quantityString, priceString, phoneString);
+        // Get the diskIO Executor from the instance of AppExecutors and
+        // call the diskIO execute method with a new Runnable and implement its run method
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.bookDao().insertBook(bookEntry);
+                finish();
+            }
+        });
        /* if (TextUtils.isEmpty(nameString)) {
             Toast.makeText(this, getString(R.string.insert_book_name_toast), Toast.LENGTH_LONG).show();
         } else {*/
