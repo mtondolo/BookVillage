@@ -110,12 +110,10 @@ public class BookReyclerAdapter extends RecyclerView.Adapter<BookReyclerAdapter.
 
         @Override
         public void onClick(View view) {
-           /* int adapterPosition = getAdapterPosition();
-            //mCursor.moveToPosition(adapterPosition);
+            int adapterPosition = getAdapterPosition();
             BookEntry bookEntry = mBookEntries.get(adapterPosition);
-            //int bookId = mCursor.getInt(CatalogActivity.INDEX_ID);
             int bookId = bookEntry.getId();
-            mClickHandler.onClick(bookId);*/
+            mClickHandler.onClick(bookId);
         }
     }
 }

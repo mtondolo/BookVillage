@@ -138,11 +138,10 @@ public class CatalogActivity extends AppCompatActivity implements BookReyclerAda
     }
 
     @Override
-    public void onClick(int _id) {
-        /*Intent editorActivityIntent = new Intent(CatalogActivity.this, EditorActivity.class);
-        Uri uriForBookClicked = BookEntry.buildBookUriWithId(_id);
-        editorActivityIntent.setData(uriForBookClicked);
-        startActivity(editorActivityIntent);*/
+    public void onClick(int id) {
+        Intent editorActivityIntent = new Intent(CatalogActivity.this, EditorActivity.class);
+        editorActivityIntent.putExtra(EditorActivity.EXTRA_BOOK_ID, id);
+        startActivity(editorActivityIntent);
     }
 
 

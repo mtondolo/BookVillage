@@ -34,10 +34,20 @@ public class EditorActivity extends AppCompatActivity
      *//*
     private static final int EXISTING_BOOK_LOADER = 0;*/
 
-    /* *//**
+    /* */
+    /**
      * Content URI for the existing book (null if it's a new book)
      *//*
     private Uri mCurrentBookUri;*/
+
+    // Extra for the book ID to be received in the intent
+    public static final String EXTRA_BOOK_ID = "extraBookId";
+
+    // Extra for the book ID to be received after rotation
+    public static final String INSTANCE_BOOK_ID = "instanceBookId";
+
+    // Constant for default task id to be used when not in update mode
+    private static final int DEFAULT_BOOK_ID = -1;
 
     /**
      * EditText field to enter the book's name
@@ -77,6 +87,8 @@ public class EditorActivity extends AppCompatActivity
      */
     private Spinner mSupplierSpinner;
 
+    private int mBookId = DEFAULT_BOOK_ID;
+
     /**
      * EditText field to enter the supplier's phone
      */
@@ -115,8 +127,33 @@ public class EditorActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
-        // COMPLETED (4) Initialize member variable for the data base
+        // Initialize member variable for the data base
         mDb = AppDatabase.getInstance(getApplicationContext());
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_BOOK_ID)) {
+            mBookId = savedInstanceState.getInt(INSTANCE_BOOK_ID, DEFAULT_BOOK_ID);
+        }
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(EXTRA_BOOK_ID))
+            if (mBookId == DEFAULT_BOOK_ID)
+                // populate the UI
+                mBookId = intent.getIntExtra(EXTRA_BOOK_ID, DEFAULT_BOOK_ID);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // Use the loadBookById method to retrieve the book with id mBookId and
+                // assign its value to a final BookEntry variable
+                final BookEntry book = mDb.bookDao().loadBookById(mBookId);
+                // Call the populateUI method with the retrieve tasks
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        populateUI(book);
+                    }
+                });
+            }
+        });
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new book or editing an existing one.
@@ -210,6 +247,24 @@ public class EditorActivity extends AppCompatActivity
         setupSpinner ();
     }
 */
+    }
+
+    /**
+     * populateUI would be called to populate the UI when in update mode
+     *
+     * @param book the bookEntry to populate the UI
+     */
+    private void populateUI(BookEntry book) {
+        // Return if the task is null
+        if (book == null) {
+            return;
+        }
+
+        // Use the variable book to populate the UI
+        mNameEditText.setText(book.getBook_name());
+        mQuantityTextView.setText(Integer.toString(book.getQuantity()));
+        mPriceEditText.setText(Double.toString(book.getPrice()));
+        mPhoneEditText.setText(Integer.toString(book.getSupplier_phone_number()));
     }
     /**
      * Setup the dropdown spinner that allows the user to select the suppler of the book.
