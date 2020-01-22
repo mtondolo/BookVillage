@@ -121,6 +121,7 @@ public class EditorActivity extends AppCompatActivity
 
     // Member variable for the Database
     private AppDatabase mDb;
+    private Intent mIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,13 +135,13 @@ public class EditorActivity extends AppCompatActivity
             mBookId = savedInstanceState.getInt(INSTANCE_BOOK_ID, DEFAULT_BOOK_ID);
         }
 
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(EXTRA_BOOK_ID)) {
+        mIntent = getIntent();
+        if (mIntent != null && mIntent.hasExtra(EXTRA_BOOK_ID)) {
             // This is an existing book, so change app bar to say "Edit Book"
             setTitle(getString(R.string.editor_activity_title_edit_book));
             if (mBookId == DEFAULT_BOOK_ID) {
                 // populate the UI
-                mBookId = intent.getIntExtra(EXTRA_BOOK_ID, DEFAULT_BOOK_ID);
+                mBookId = mIntent.getIntExtra(EXTRA_BOOK_ID, DEFAULT_BOOK_ID);
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -291,13 +292,10 @@ public class EditorActivity extends AppCompatActivity
 
 
     /**
-     * Get user input from editor and save new book into database.
+     * SaveData is called when the "save" options menu item is clicked.
+     * It retrieves user input and inserts that new task data into the underlying database.
      */
     private void saveData() {
-
-        /*int defaultSupplierPhone = 0;
-        double defaultPrice = 0;*/
-
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -305,14 +303,20 @@ public class EditorActivity extends AppCompatActivity
         double priceString = Double.parseDouble(mPriceEditText.getText().toString().trim());
         int phoneString = Integer.parseInt(mPhoneEditText.getText().toString().trim());
 
-        // Make taskEntry final so it is visible inside the run method
         final BookEntry bookEntry = new BookEntry(nameString, quantityString, priceString, phoneString);
-        // Get the diskIO Executor from the instance of AppExecutors and
-        // call the diskIO execute method with a new Runnable and implement its run method
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                mDb.bookDao().insertBook(bookEntry);
+                // Insert the book only if mBookId matches DEFAULT_BOOK_ID
+                // Otherwise update it
+                // call finish in any case
+                if (mBookId == DEFAULT_BOOK_ID) {
+                    mDb.bookDao().insertBook(bookEntry);
+                } else {
+                    //update book
+                    bookEntry.setId(mBookId);
+                    mDb.bookDao().updateBook(bookEntry);
+                }
                 finish();
             }
         });
@@ -334,6 +338,8 @@ public class EditorActivity extends AppCompatActivity
             } else {
                 values.put(BookEntry.COLUMN_BOOK_SUPPLIER_PHONE, Integer.parseInt(phoneString));
             }*/
+
+
 
 
            /* // Determine if this is a new or existing book by checking if mCurrentBookUri is null or not
