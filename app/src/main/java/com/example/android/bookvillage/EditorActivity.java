@@ -218,23 +218,20 @@ public class EditorActivity extends AppCompatActivity
             }
         });
 
-      /*  mOrderTextView.setOnClickListener ( new View.OnClickListener () {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    String phoneNumber = mPhoneEditText.getText ().toString ();
-                                                    Intent intent = new Intent ( Intent.ACTION_DIAL );
-                                                    intent.setData ( Uri.parse ( "tel:" + phoneNumber ) );
-                                                    if (intent.resolveActivity ( getPackageManager () ) != null) {
-                                                        startActivity ( intent );
-                                                    }
+        mOrderTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phoneNumber = mPhoneEditText.getText().toString();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
 
-                                                }
-                                            }
-        );
+            }
+        });
 
-        setupSpinner ();
-    }
-*/
+        //setupSpinner ();
     }
 
     /**
