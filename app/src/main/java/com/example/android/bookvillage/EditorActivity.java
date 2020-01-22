@@ -135,47 +135,35 @@ public class EditorActivity extends AppCompatActivity
         }
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(EXTRA_BOOK_ID))
-            if (mBookId == DEFAULT_BOOK_ID)
+        if (intent != null && intent.hasExtra(EXTRA_BOOK_ID)) {
+            // This is an existing book, so change app bar to say "Edit Book"
+            setTitle(getString(R.string.editor_activity_title_edit_book));
+            if (mBookId == DEFAULT_BOOK_ID) {
                 // populate the UI
                 mBookId = intent.getIntExtra(EXTRA_BOOK_ID, DEFAULT_BOOK_ID);
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                // Use the loadBookById method to retrieve the book with id mBookId and
-                // assign its value to a final BookEntry variable
-                final BookEntry book = mDb.bookDao().loadBookById(mBookId);
-                // Call the populateUI method with the retrieve tasks
-                runOnUiThread(new Runnable() {
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        populateUI(book);
+                        // Use the loadBookById method to retrieve the book with id mBookId and
+                        // assign its value to a final BookEntry variable
+                        final BookEntry book = mDb.bookDao().loadBookById(mBookId);
+                        // Call the populateUI method with the retrieve tasks
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                populateUI(book);
+                            }
+                        });
                     }
                 });
             }
-        });
-
-        // Examine the intent that was used to launch this activity,
-        // in order to figure out if we're creating a new book or editing an existing one.
-        //Intent intent = getIntent ();
-        //mCurrentBookUri = intent.getData ();
-
-        // If the intent DOES NOT contain a book content URI, then we know that we are
-        // creating a new book.
-      /*  if (mCurrentBookUri == null) {
-            // This is a new book, so change the app bar to say "Add a Book"
-            setTitle ( getString ( R.string.editor_activity_title_new_book ) );
-
+        } else {
+            // Otherwise, this is a new book, so change the app bar to say "Add a Book"
+            setTitle(getString(R.string.editor_activity_title_new_book));
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a book that hasn't been created yet.)
-            invalidateOptionsMenu ();
-        } else {
-            // Otherwise this is an existing book, so change app bar to say "Edit Book"
-            setTitle ( getString ( R.string.editor_activity_title_edit_book ) );
-
-            getLoaderManager ().initLoader ( EXISTING_BOOK_LOADER, null, this );
-
-        }*/
+            invalidateOptionsMenu();
+        }
 
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_book_name);
