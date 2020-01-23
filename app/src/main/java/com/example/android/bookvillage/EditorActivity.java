@@ -1,22 +1,19 @@
 package com.example.android.bookvillage;
 
 import android.app.AlertDialog;
-import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
 
-import androidx.core.app.NavUtils;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -94,12 +91,13 @@ public class EditorActivity extends AppCompatActivity
      */
     private EditText mPhoneEditText;
 
-    /*  *//**
+    /*  */
+    /**
      * Supplier of the book. The possible valid values are in the BookContract.java file:
      * {@link BookEntry#SUPPLIER_UNKNOWN}, {@link BookEntry#SUPPLIER_ONE}, or
      * {@link BookEntry#SUPPLIER_TWO}.
-     *//*
-    private int mSupplier = BookEntry.SUPPLIER_UNKNOWN;*/
+     */
+    private int mSupplier = BookEntry.SUPPLIER_UNKNOWN;
 
     /**
      * Boolean flag that keeps track of whether the book has been edited (true) or not (false)
@@ -122,6 +120,10 @@ public class EditorActivity extends AppCompatActivity
     // Member variable for the Database
     private AppDatabase mDb;
     private Intent mIntent;
+    private String mNameString;
+    private int mQuantityString;
+    private double mPriceString;
+    private int mPhoneString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,14 +169,7 @@ public class EditorActivity extends AppCompatActivity
         }
 
         // Find all relevant views that we will need to read user input from
-        mNameEditText = (EditText) findViewById(R.id.edit_book_name);
-        mQuantityTextView = (TextView) findViewById(R.id.edit_book_quantity);
-        mIncreaseTextView = (TextView) findViewById(R.id.increase_text_view);
-        mDecreaseTextView = (TextView) findViewById(R.id.decrease_text_view);
-        mPriceEditText = (EditText) findViewById(R.id.edit_book_price);
-        mSupplierSpinner = (Spinner) findViewById(R.id.spinner_supplier);
-        mPhoneEditText = (EditText) findViewById(R.id.edit_supplier_phone);
-        mOrderTextView = (TextView) findViewById(R.id.order_text_view);
+        initViews();
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -213,7 +208,6 @@ public class EditorActivity extends AppCompatActivity
                     } else {
                         Toast.makeText(EditorActivity.this, getString(R.string.no_stock), Toast.LENGTH_SHORT).show();
                         return;
-
                     }
                 }
             }
@@ -232,7 +226,18 @@ public class EditorActivity extends AppCompatActivity
             }
         });
 
-        //setupSpinner ();
+        setupSpinner();
+    }
+
+    private void initViews() {
+        mNameEditText = (EditText) findViewById(R.id.edit_book_name);
+        mQuantityTextView = (TextView) findViewById(R.id.edit_book_quantity);
+        mIncreaseTextView = (TextView) findViewById(R.id.increase_text_view);
+        mDecreaseTextView = (TextView) findViewById(R.id.decrease_text_view);
+        mPriceEditText = (EditText) findViewById(R.id.edit_book_price);
+        mSupplierSpinner = (Spinner) findViewById(R.id.spinner_supplier);
+        mPhoneEditText = (EditText) findViewById(R.id.edit_supplier_phone);
+        mOrderTextView = (TextView) findViewById(R.id.order_text_view);
     }
 
     /**
@@ -245,37 +250,50 @@ public class EditorActivity extends AppCompatActivity
         if (book == null) {
             return;
         }
-
         // Use the variable book to populate the UI
         mNameEditText.setText(book.getBook_name());
         mQuantityTextView.setText(Integer.toString(book.getQuantity()));
         mPriceEditText.setText(Double.toString(book.getPrice()));
         mPhoneEditText.setText(Integer.toString(book.getSupplier_phone_number()));
+        mSupplier = book.getSupplier_name();
+        switch (mSupplier) {
+            case BookEntry.SUPPLIER_ONE:
+                mSupplierSpinner.setSelection(1);
+                break;
+            case BookEntry.SUPPLIER_TWO:
+                mSupplierSpinner.setSelection(2);
+                break;
+            default:
+                mSupplierSpinner.setSelection(0);
+                break;
+        }
+        mSupplierSpinner.setSelection(mSupplier);
     }
+
     /**
      * Setup the dropdown spinner that allows the user to select the suppler of the book.
      */
-    /*private void setupSpinner() {
+    private void setupSpinner() {
         // Create adapter for spinner. The list options are from the String array it will use
         // the spinner will use the default layout
-        ArrayAdapter supplierSpinnerAdapter = ArrayAdapter.createFromResource ( this,
-                R.array.array_supplier_options, android.R.layout.simple_spinner_item );
+        ArrayAdapter supplierSpinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.array_supplier_options, android.R.layout.simple_spinner_item);
 
         // Specify dropdown layout style - simple list view with 1 item per line
-        supplierSpinnerAdapter.setDropDownViewResource ( android.R.layout.simple_dropdown_item_1line );
+        supplierSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 
         // Apply the adapter to the spinner
-        mSupplierSpinner.setAdapter ( supplierSpinnerAdapter );*/
+        mSupplierSpinner.setAdapter(supplierSpinnerAdapter);
 
-    // Set the integer mSelected to the constant values
-      /*  mSupplierSpinner.setOnItemSelectedListener ( new AdapterView.OnItemSelectedListener () {
+        // Set the integer mSelected to the constant values
+        mSupplierSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selection = (String) parent.getItemAtPosition ( position );
-                if (!TextUtils.isEmpty ( selection )) {
-                    if (selection.equals ( getString ( R.string.supplier_one ) )) {
+                String selection = (String) parent.getItemAtPosition(position);
+                if (!TextUtils.isEmpty(selection)) {
+                    if (selection.equals(getString(R.string.supplier_one))) {
                         mSupplier = BookEntry.SUPPLIER_ONE;
-                    } else if (selection.equals ( getString ( R.string.supplier_two ) )) {
+                    } else if (selection.equals(getString(R.string.supplier_two))) {
                         mSupplier = BookEntry.SUPPLIER_TWO;
                     } else {
                         mSupplier = BookEntry.SUPPLIER_UNKNOWN;
@@ -288,7 +306,8 @@ public class EditorActivity extends AppCompatActivity
             public void onNothingSelected(AdapterView<?> parent) {
                 mSupplier = BookEntry.SUPPLIER_UNKNOWN;
             }
-        } );*/
+        });
+    }
 
 
     /**
@@ -296,14 +315,8 @@ public class EditorActivity extends AppCompatActivity
      * It retrieves user input and inserts that new task data into the underlying database.
      */
     private void saveData() {
-        // Read from input fields
-        // Use trim to eliminate leading or trailing white space
-        String nameString = mNameEditText.getText().toString().trim();
-        int quantityString = Integer.parseInt(mQuantityTextView.getText().toString().trim());
-        double priceString = Double.parseDouble(mPriceEditText.getText().toString().trim());
-        int phoneString = Integer.parseInt(mPhoneEditText.getText().toString().trim());
-
-        final BookEntry bookEntry = new BookEntry(nameString, quantityString, priceString, phoneString);
+        readViews();
+        final BookEntry bookEntry = new BookEntry(mNameString, mQuantityString, mPriceString, mSupplier, mPhoneString);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -326,14 +339,8 @@ public class EditorActivity extends AppCompatActivity
      * Perform the deletion of the book in the database.
      */
     private void deleteBook() {
-        // Read from input fields
-        // Use trim to eliminate leading or trailing white space
-        String nameString = mNameEditText.getText().toString().trim();
-        int quantityString = Integer.parseInt(mQuantityTextView.getText().toString().trim());
-        double priceString = Double.parseDouble(mPriceEditText.getText().toString().trim());
-        int phoneString = Integer.parseInt(mPhoneEditText.getText().toString().trim());
-
-        final BookEntry bookEntry = new BookEntry(nameString, quantityString, priceString, phoneString);
+        readViews();
+        final BookEntry bookEntry = new BookEntry(mNameString, mQuantityString, mPriceString, mSupplier, mPhoneString);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -347,6 +354,15 @@ public class EditorActivity extends AppCompatActivity
         });
 
 
+    }
+
+    // Read from input fields
+    // Use trim to eliminate leading or trailing white space
+    private void readViews() {
+        mNameString = mNameEditText.getText().toString().trim();
+        mQuantityString = Integer.parseInt(mQuantityTextView.getText().toString().trim());
+        mPriceString = Double.parseDouble(mPriceEditText.getText().toString().trim());
+        mPhoneString = Integer.parseInt(mPhoneEditText.getText().toString().trim());
     }
        /* if (TextUtils.isEmpty(nameString)) {
             Toast.makeText(this, getString(R.string.insert_book_name_toast), Toast.LENGTH_LONG).show();
@@ -441,7 +457,7 @@ public class EditorActivity extends AppCompatActivity
                 // Exit activity
                 finish();
                 return true;
-        // Respond to a click on the "Delete" menu option
+            // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
                 // Pop up confirmation dialog for deletion
                 showDeleteConfirmationDialog();
@@ -476,7 +492,7 @@ public class EditorActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-      private void showDeleteConfirmationDialog() {
+    private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
