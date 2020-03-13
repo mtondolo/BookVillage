@@ -23,19 +23,7 @@ import com.example.android.bookvillage.data.AppDatabase;
 import com.example.android.bookvillage.data.BookEntry;
 /*import com.example.android.bookvillage.data.BookContract.BookEntry;*/
 
-public class EditorActivity extends AppCompatActivity
-        /*implements LoaderManager.LoaderCallbacks<Cursor>*/ {
-
-    /* *//**
-     * Identifier for the book data loader
-     *//*
-    private static final int EXISTING_BOOK_LOADER = 0;*/
-
-    /* */
-    /**
-     * Content URI for the existing book (null if it's a new book)
-     *//*
-    private Uri mCurrentBookUri;*/
+public class EditorActivity extends AppCompatActivity {
 
     // Extra for the book ID to be received in the intent
     public static final String EXTRA_BOOK_ID = "extraBookId";
@@ -102,20 +90,6 @@ public class EditorActivity extends AppCompatActivity
     /**
      * Boolean flag that keeps track of whether the book has been edited (true) or not (false)
      */
-    /* private boolean mBookHasChanged = false;
-
-     */
-    /**
-     * OnTouchListener that listens for any user touches on a View, implying that they are modifying
-     * the view, and we change the mBookHasChanged boolean to true.
-     *//*
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            mBookHasChanged = true;
-            return false;
-        }
-    };*/
 
     // Member variable for the Database
     private AppDatabase mDb;
@@ -170,18 +144,6 @@ public class EditorActivity extends AppCompatActivity
 
         // Find all relevant views that we will need to read user input from
         initViews();
-
-        // Setup OnTouchListeners on all the input fields, so we can determine if the user
-        // has touched or modified them. This will let us know if there are unsaved changes
-        // or not, if the user tries to leave the editor without saving.
-       /* mNameEditText.setOnTouchListener(mTouchListener);
-        mQuantityTextView.setOnTouchListener(mTouchListener);
-        mIncreaseTextView.setOnTouchListener(mTouchListener);
-        mDecreaseTextView.setOnTouchListener(mTouchListener);
-        mPriceEditText.setOnTouchListener(mTouchListener);
-        mSupplierSpinner.setOnTouchListener(mTouchListener);
-        mPhoneEditText.setOnTouchListener(mTouchListener);
-        mOrderTextView.setOnTouchListener(mTouchListener);*/
 
         //To increase book quantity
         mIncreaseTextView.setOnClickListener(new View.OnClickListener() {
@@ -353,7 +315,6 @@ public class EditorActivity extends AppCompatActivity
             }
         });
 
-
     }
 
     // Read from input fields
@@ -364,65 +325,6 @@ public class EditorActivity extends AppCompatActivity
         mPriceString = Double.parseDouble(mPriceEditText.getText().toString().trim());
         mPhoneString = Integer.parseInt(mPhoneEditText.getText().toString().trim());
     }
-       /* if (TextUtils.isEmpty(nameString)) {
-            Toast.makeText(this, getString(R.string.insert_book_name_toast), Toast.LENGTH_LONG).show();
-        } else {*/
-            /*ContentValues values = new ContentValues();
-            values.put(BookEntry.COLUMN_BOOK_NAME, nameString);
-            values.put(BookEntry.COLUMN_BOOK_QUANTITY, quantityString);*/
-
-           /* if (TextUtils.isEmpty(priceString)) {
-                values.put(BookEntry.COLUMN_BOOK_PRICE, defaultPrice);
-            } else {
-                values.put(BookEntry.COLUMN_BOOK_PRICE, Double.parseDouble(priceString));
-            }
-            values.put(BookEntry.COLUMN_BOOK_SUPPLIER_NAME, mSupplier);
-            if (TextUtils.isEmpty(phoneString)) {
-                values.put(BookEntry.COLUMN_BOOK_SUPPLIER_PHONE, defaultSupplierPhone);
-            } else {
-                values.put(BookEntry.COLUMN_BOOK_SUPPLIER_PHONE, Integer.parseInt(phoneString));
-            }*/
-
-
-
-
-           /* // Determine if this is a new or existing book by checking if mCurrentBookUri is null or not
-            if (mCurrentBookUri == null) {
-
-                // This is a NEW book, so insert a new book into the provider,
-                // returning the content URI for the new book.
-                Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, values);
-
-                // Show a toast message depending on whether or not the insertion was successful.
-                if (newUri == null) {
-                    // If the new content URI is null, then there was an error with insertion.
-                    Toast.makeText(this, getString(R.string.editor_insert_book_failed),
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    // Otherwise, the insertion was successful and we can display a toast.
-                    Toast.makeText(this, getString(R.string.editor_insert_book_successful),
-                            Toast.LENGTH_SHORT).show();
-                }*//*
-            } else {
-                // Otherwise this is an EXISTING book, so update the book with content URI: mCurrentBookUri
-                // and pass in the new ContentValues. Pass in null for the selection and selection args
-                // because mCurrentBookUri will already identify the correct row in the database that
-                // we want to modify.
-                int rowsAffected = getContentResolver().update(mCurrentBookUri, values, null, null);
-
-                // Show a toast message depending on whether or not the update was successful.
-                if (rowsAffected == 0) {
-                    // If no rows were affected, then there was an error with the update.
-                    Toast.makeText(this, getString(R.string.editor_update_book_failed),
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    // Otherwise, the update was successful and we can display a toast.
-                    Toast.makeText(this, getString(R.string.editor_update_book_successful),
-                            Toast.LENGTH_SHORT).show();
-                }
-            }*//*
-        }*/
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -432,20 +334,6 @@ public class EditorActivity extends AppCompatActivity
         return true;
     }
 
-    /**
-     * This method is called after invalidateOptionsMenu(), so that the
-     * menu can be updated (some menu items can be hidden or made visible).
-     */
-  /*  @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        // If this is a new book, hide the "Delete" menu item.
-        if (mCurrentBookUri == null) {
-            MenuItem menuItem = menu.findItem(R.id.action_delete);
-            menuItem.setVisible(false);
-        }
-        return true;
-    }*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
@@ -463,31 +351,6 @@ public class EditorActivity extends AppCompatActivity
                 showDeleteConfirmationDialog();
                 return true;
         }
-        // Respond to a click on the "Up" arrow button in the app bar
-           /* case android.R.id.home:
-                // If the book hasn't changed, continue with navigating up to parent activity
-                // which is the {@link CatalogActivity}.
-                if (!mBookHasChanged) {
-                    NavUtils.navigateUpFromSameTask(this);
-                    return true;
-                }*/
-
-        // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-        // Create a click listener to handle the user confirming that
-        // changes should be discarded.
-            /*    DialogInterface.OnClickListener discardButtonClickListener =
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(EditorActivity.this);
-                            }
-                        };
-
-                // Show a dialog that notifies the user they have unsaved changes
-                showUnsavedChangesDialog(discardButtonClickListener);
-                return true;
-        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -521,132 +384,4 @@ public class EditorActivity extends AppCompatActivity
     /**
      * This method is called when the back button is pressed.
      */
-   /* @Override
-    public void onBackPressed() {
-        // If the book hasn't changed, continue with handling back button press
-        if (!mBookHasChanged) {
-            super.onBackPressed();
-            return;
-        }
-
-        // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-        // Create a click listener to handle the user confirming that changes should be discarded.
-        DialogInterface.OnClickListener discardButtonClickListener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // User clicked "Discard" button, close the current activity.
-                        finish();
-                    }
-                };
-
-        // Show dialog that there are unsaved changes
-        showUnsavedChangesDialog(discardButtonClickListener);
-    }*/
-
- /*   @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-
-        // Since the editor shows all book attributes, define a projection that contains
-        // all columns from the book table
-        String[] projection = {
-                BookEntry._ID,
-                BookEntry.COLUMN_BOOK_NAME,
-                BookEntry.COLUMN_BOOK_QUANTITY,
-                BookEntry.COLUMN_BOOK_PRICE,
-                BookEntry.COLUMN_BOOK_SUPPLIER_NAME,
-                BookEntry.COLUMN_BOOK_SUPPLIER_PHONE};
-
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mCurrentBookUri,         // Query the content URI for the current book
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order
-    }
-*/
-   /* @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-
-        if (cursor.moveToFirst()) {
-
-            // Find the columns of book attributes that we're interested in
-            int nameColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_NAME);
-            int quantityColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_QUANTITY);
-            int priceColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_PRICE);
-            int supplierNameColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_SUPPLIER_NAME);
-            int supplierPhoneColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_BOOK_SUPPLIER_PHONE);
-
-            // Extract out the value from the Cursor for the given column index
-            String bookName = cursor.getString(nameColumnIndex);
-            int bookQuantity = cursor.getInt(quantityColumnIndex);
-            double bookPrice = cursor.getDouble(priceColumnIndex);
-            int bookSupplierName = cursor.getInt(supplierNameColumnIndex);
-            String bookQSupplierPhone = cursor.getString((supplierPhoneColumnIndex));
-
-            // Update the TextViews with the attributes for the current book
-            mNameEditText.setText(bookName);
-            mPhoneEditText.setText(bookQSupplierPhone);
-            mQuantityTextView.setText(String.valueOf(bookQuantity));
-            mPriceEditText.setText(String.valueOf(bookPrice));
-
-            // Gender is a dropdown spinner, so map the constant value from the database
-            // into one of the dropdown options (0 is Unknown, 1 is Supplier One, Supplier Two).
-            // Then call setSelection() so that option is displayed on screen as the current selection.
-            switch (bookSupplierName) {
-                case BookEntry.SUPPLIER_ONE:
-                    mSupplierSpinner.setSelection(1);
-                    break;
-                case BookEntry.SUPPLIER_TWO:
-                    mSupplierSpinner.setSelection(2);
-                    break;
-                default:
-                    mSupplierSpinner.setSelection(0);
-                    break;
-            }
-
-        }
-
-    }*/
-
-   /* @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-        // If the loader is invalidated, clear out all the data from the input fields.
-        mNameEditText.setText("");
-        mQuantityTextView.setText("");
-        mPriceEditText.setText("");
-        mSupplierSpinner.setSelection(0); // Select "Unknown" supplier
-        mPhoneEditText.setText("");
-    }*/
-
-    /**
-     * Show a dialog that warns the user there are unsaved changes that will be lost
-     * if they continue leaving the editor.
-     *
-     * @param discardButtonClickListener is the click listener for what to do when
-     *                                   the user confirms they want to discard their changes
-     */
- /*   private void showUnsavedChangesDialog(
-            DialogInterface.OnClickListener discardButtonClickListener) {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.unsaved_changes_dialog_msg);
-        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the book.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        // Create and show the AlertDialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }*/
 }

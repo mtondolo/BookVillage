@@ -88,12 +88,6 @@ public class BookReyclerAdapter extends RecyclerView.Adapter<BookReyclerAdapter.
         notifyDataSetChanged();
     }
 
-
-   /* void swapCursor(Cursor newCursor) {
-        mCursor = newCursor;
-        notifyDataSetChanged();
-    }*/
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final TextView mTextName;
