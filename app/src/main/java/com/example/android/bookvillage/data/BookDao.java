@@ -29,5 +29,5 @@ public interface BookDao {
     // A Query method that receives an int id and returns a BookEntry Object
     // The query for this method gets all the data for that id in the book table
     @Query("SELECT * FROM books WHERE id = :id")
-    BookEntry loadBookById(int id);
+    LiveData<BookEntry> loadBookById(int id);
 }

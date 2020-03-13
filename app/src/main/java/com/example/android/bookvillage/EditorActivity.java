@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +27,8 @@ import com.example.android.bookvillage.data.BookEntry;
 /*import com.example.android.bookvillage.data.BookContract.BookEntry;*/
 
 public class EditorActivity extends AppCompatActivity {
+
+    private String TAG = EditorActivity.class.getSimpleName();
 
     // Extra for the book ID to be received in the intent
     public static final String EXTRA_BOOK_ID = "extraBookId";
@@ -118,19 +123,16 @@ public class EditorActivity extends AppCompatActivity {
             if (mBookId == DEFAULT_BOOK_ID) {
                 // populate the UI
                 mBookId = mIntent.getIntExtra(EXTRA_BOOK_ID, DEFAULT_BOOK_ID);
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                // Use the loadBookById method to retrieve the book with id mBookId and
+                // assign its value to a final BookEntry variable
+                final LiveData<BookEntry> book = mDb.bookDao().loadBookById(mBookId);
+                // Call the populateUI method with the retrieve tasks
+                book.observe(this, new Observer<BookEntry>() {
                     @Override
-                    public void run() {
-                        // Use the loadBookById method to retrieve the book with id mBookId and
-                        // assign its value to a final BookEntry variable
-                        final BookEntry book = mDb.bookDao().loadBookById(mBookId);
-                        // Call the populateUI method with the retrieve tasks
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                populateUI(book);
-                            }
-                        });
+                    public void onChanged(BookEntry bookEntry) {
+                        book.removeObserver(this);
+                        Log.v(TAG, "Receiving database update from LiveData");
+                        populateUI(bookEntry);
                     }
                 });
             }
