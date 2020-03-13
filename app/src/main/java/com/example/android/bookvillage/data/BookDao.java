@@ -2,6 +2,7 @@ package com.example.android.bookvillage.data;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -14,7 +15,7 @@ import androidx.room.Update;
 public interface BookDao {
 
     @Query("SELECT * FROM books ORDER BY id")
-    List<BookEntry> loadAllBooks();
+    LiveData<List<BookEntry>> loadAllBooks();
 
     @Insert
     void insertBook(BookEntry bookEntry);

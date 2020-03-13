@@ -5,12 +5,16 @@ import android.content.Intent;
 import com.example.android.bookvillage.data.AppDatabase;
 import com.example.android.bookvillage.data.BookEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +27,8 @@ import java.util.List;
 
 public class CatalogActivity extends AppCompatActivity implements BookReyclerAdapter.
         BookReyclerAdapterOnClickHandler {
+
+    private String TAG = CatalogActivity.class.getSimpleName();
 
     /*Cursor mCursor;*/
     private BookReyclerAdapter mBookReyclerAdapter;
@@ -54,26 +60,17 @@ public class CatalogActivity extends AppCompatActivity implements BookReyclerAda
 
         // Initialize member variable for the data base
         mDb = AppDatabase.getInstance(getApplicationContext());
+        retrieveBooks();
     }
 
-    /**
-     * This method is called after this activity has been paused or restarted.
-     * Often, this is after new data has been inserted through an EditorActivity,
-     * so this re-queries the database data for any changes.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+    private void retrieveBooks() {
+        Log.d(TAG, "Actively retrieving the books from the database");
+        final LiveData<List<BookEntry>> books = mDb.bookDao().loadAllBooks();
+        books.observe(this, new Observer<List<BookEntry>>() {
             @Override
-            public void run() {
-                final List<BookEntry> books = mDb.bookDao().loadAllBooks();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBookReyclerAdapter.setBooks(books);
-                    }
-                });
+            public void onChanged(List<BookEntry> bookEntries) {
+                Log.d(TAG, "Receiving database update from LiveData");
+                mBookReyclerAdapter.setBooks(bookEntries);
             }
         });
     }
