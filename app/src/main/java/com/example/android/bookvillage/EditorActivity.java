@@ -8,6 +8,7 @@ import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -123,14 +124,14 @@ public class EditorActivity extends AppCompatActivity {
             if (mBookId == DEFAULT_BOOK_ID) {
                 // populate the UI
                 mBookId = mIntent.getIntExtra(EXTRA_BOOK_ID, DEFAULT_BOOK_ID);
-                // Use the loadBookById method to retrieve the book with id mBookId and
-                // assign its value to a final BookEntry variable
-                final LiveData<BookEntry> book = mDb.bookDao().loadBookById(mBookId);
-                // Call the populateUI method with the retrieve tasks
-                book.observe(this, new Observer<BookEntry>() {
+
+                EditorViewModelFactory factory = new EditorViewModelFactory(mDb, mBookId);
+                final EditorViewModel viewModel
+                        = ViewModelProviders.of(this, factory).get(EditorViewModel.class);
+                viewModel.getBook().observe(this, new Observer<BookEntry>() {
                     @Override
                     public void onChanged(BookEntry bookEntry) {
-                        book.removeObserver(this);
+                        viewModel.getBook().removeObserver(this);
                         Log.v(TAG, "Receiving database update from LiveData");
                         populateUI(bookEntry);
                     }
@@ -191,6 +192,7 @@ public class EditorActivity extends AppCompatActivity {
         });
 
         setupSpinner();
+
     }
 
     private void initViews() {
