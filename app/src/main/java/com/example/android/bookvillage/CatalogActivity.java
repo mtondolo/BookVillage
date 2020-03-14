@@ -5,11 +5,10 @@ import android.content.Intent;
 import com.example.android.bookvillage.data.AppDatabase;
 import com.example.android.bookvillage.data.BookEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,7 +27,7 @@ import java.util.List;
 public class CatalogActivity extends AppCompatActivity implements BookReyclerAdapter.
         BookReyclerAdapterOnClickHandler {
 
-    private String TAG = CatalogActivity.class.getSimpleName();
+    private static String TAG = CatalogActivity.class.getSimpleName();
 
     /*Cursor mCursor;*/
     private BookReyclerAdapter mBookReyclerAdapter;
@@ -60,16 +59,15 @@ public class CatalogActivity extends AppCompatActivity implements BookReyclerAda
 
         // Initialize member variable for the data base
         mDb = AppDatabase.getInstance(getApplicationContext());
-        retrieveBooks();
+        setUpViewModel();
     }
 
-    private void retrieveBooks() {
-        Log.d(TAG, "Actively retrieving the books from the database");
-        final LiveData<List<BookEntry>> books = mDb.bookDao().loadAllBooks();
-        books.observe(this, new Observer<List<BookEntry>>() {
+    private void setUpViewModel() {
+        CatalogViewModel viewModel = ViewModelProviders.of(this).get(CatalogViewModel.class);
+        viewModel.getBooks().observe(this, new Observer<List<BookEntry>>() {
             @Override
             public void onChanged(List<BookEntry> bookEntries) {
-                Log.d(TAG, "Receiving database update from LiveData");
+                Log.d(TAG, "Updating list of tasks from LiveData in ViewModel");
                 mBookReyclerAdapter.setBooks(bookEntries);
             }
         });
